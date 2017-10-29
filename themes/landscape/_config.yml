@@ -1,0 +1,59 @@
+# Header
+menu:
+  Home: /
+  Archives: /archives
+rss: /atom.xml
+
+# SubNav
+subnav:
+  github: "https://github.com/diaozxin007"
+  rss: /atom.xml
+  #psn: "#"
+  #zhihu: "#"
+  #douban: "#"
+  #segmentfault: "#"
+  #bilibili: "#"
+  #acfun: "#"
+  mail: "diaozxin@gmail.com"
+  #facebook: "#"
+  #google: "#"
+  #twitter: "#"
+  #linkedin: "#"
+
+# Content
+excerpt_link: Read More
+fancybox: true
+
+reward_type: 0
+
+# Sidebar
+sidebar: right
+widgets:
+- category
+- tag
+- tagcloud
+- archive
+- recent_posts
+
+# display widgets at the bottom of index pages (pagination == 2)
+index_widgets:
+# - category
+# - tagcloud
+# - archive
+
+# widget behavior
+archive_type: 'monthly'
+show_count: false
+
+# Miscellaneous
+baidu_analytics: ''
+favicon: /favicon.png
+twitter:
+google_plus:
+fb_admins:
+fb_app_id:
+
+smart_menu:
+  innerArchive: '所有文章'
+  friends: false
+  aboutme: '关于我'
