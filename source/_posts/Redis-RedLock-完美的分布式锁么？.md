@@ -7,7 +7,7 @@ tags: [Redis,分布式锁,后端]
 上周花了点时间研究了 Redis 的作者提的 RedLock 的算法来实现一个分布式锁，[文章地址](https://www.xilidou.com/2017/10/23/Redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/)。在官方的文档最下面发现了这样一句话。
 
 ># Analysis of RedLock
-Martin Kleppmann [analyzed Redlock here](http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html). I disagree with the analysis and posted my reply to [his analysis here](http://antirez.com/news/101).
+>Martin Kleppmann [analyzed Redlock here](http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html). I disagree with the analysis and posted my reply to [his analysis here](http://antirez.com/news/101).
 
 突然觉得事情好像没有那么简单，就点进去看了看。仔细读了读文章，发现了一个不得了的世界。于是静下心来研究了 Martin 对 RedLock 的批评，还有 RedLock 作者 antirez 的反击。
 
