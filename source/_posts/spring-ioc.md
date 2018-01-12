@@ -4,6 +4,8 @@ date: 2018-01-08 19:16:52
 tags: [java,spring,ioc]
 ---
 
+原文地址：https://www.xilidou.com/2018/01/08/spring-ioc/
+
 Spring 作为 J2ee 开发事实上的标准，是每个Java开发人员都需要了解的框架。但是Spring 的 IoC 和 Aop 的特性，对于初级的Java开发人员来说还是比较难于理解的。所以我就想写一系列的文章给大家讲解这些特性。从而能够进一步深入了解 Spring 框架。
 
 读完这篇文章，你将会了解：
@@ -178,7 +180,7 @@ public class BeanFactoryImpl implements BeanFactory{
             //对象创建成功以后，注入对象需要的参数
             populatebean(bean);
             
-            //再吧对象存入Map中方便下次使用。
+            //再把对象存入Map中方便下次使用。
             beanMap.put(name,bean;
         }
 
