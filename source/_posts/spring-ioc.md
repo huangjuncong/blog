@@ -61,7 +61,7 @@ wiki百科的解释是：
 
 ![](https://ws1.sinaimg.cn/large/006tKfTcly1fndrb3d0ofj308107cmxf.jpg)
 
-从宏观上观察一下这个框架，包含了2个package、在包 bean 中定义了我们框架的数据结构。core 是我们框架的核心逻辑所在。utils 是一些通用工具类。接下来我们就逐一讲解一下：
+从宏观上观察一下这个框架，包含了3个package、在包 bean 中定义了我们框架的数据结构。core 是我们框架的核心逻辑所在。utils 是一些通用工具类。接下来我们就逐一讲解一下：
 
 ### 1. bean 定义了框架的数据结构
 
@@ -227,11 +227,11 @@ public class BeanFactoryImpl implements BeanFactory{
 }
 ```
 
-首先我们看到在 BeanFactory 的实现中。我们有两 HashMap，beanMap 和 beanDefineMap。 beanDefineMap 存储的是对象的名称和对象对应的数据结构的映射。
+首先我们看到在 BeanFactory 的实现中。我们有两 HashMa:，beanMap 和 beanDefineMap。 beanDefineMap 存储的是对象的名称和对象对应的数据结构的映射。beanMap 用于保存 beanName和实例化之后的对象。
 
 容器初始化的时候，会调用 `BeanFactoryImpl.registerBean` 方法。把 对象的 BeanDefination 数据结构，存储起来。
 
-当我们调用 getBean() 的方法的时候。会先到 beanMap 里面查找，有没有实例化好的对象。如果没有，就会qubeanDefineMap查找这个对象对应的 BeanDefination。再利用DeanDefination去实例化一个对象。
+当我们调用 getBean() 的方法的时候。会先到 beanMap 里面查找，有没有实例化好的对象。如果没有，就会去beanDefineMap查找这个对象对应的 BeanDefination。再利用DeanDefination去实例化一个对象。
 
 对象实例化成功以后，我们还需要注入相应的参数，调用 `populatebean()`这个方法。在 populateBean 这个方法中，会扫描对象里面的Field，如果对象中的 Field 是我们IoC容器管理的对象，那就会调用 我们上文实现的 `ReflectionUtils.injectField`来注入对象。
 
