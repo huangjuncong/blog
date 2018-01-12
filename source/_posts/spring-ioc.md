@@ -33,11 +33,11 @@ wiki百科的解释是：
 
 ![](https://ws4.sinaimg.cn/large/006tNc79ly1fnd1qwnp8qj30aa06ot8t.jpg)
 
-这样的工程简直就是灾难，如果我们引入 Ioc 框架。由框架来维护类的生命周期和类之间的应用。我们的系统就会变成这样：
+这样的工程简直就是灾难，如果我们引入 Ioc 框架。由框架来维护类的生命周期和类之间的引用。我们的系统就会变成这样：
 
 ![](https://ws4.sinaimg.cn/large/006tKfTcly1fnd1yq1vzpj30aa06v0sr.jpg)
 
-这个时候我们发现，我们类之间的关系都由 IoC 框架负责维护类的生命周期，同时将类注入到需要的类中。也就是类的使用者只负责使用，而不负责维护。把专业的事情交给专业的框架来完成。大大的减少开发的复杂度。
+这个时候我们发现，我们类之间的关系都由 IoC 框架负责维护，同时将类注入到需要的类中。也就是类的使用者只负责使用，而不负责维护。把专业的事情交给专业的框架来完成。大大的减少开发的复杂度。
 
 用一个类比来理解这个问题。Ioc 框架就是我们生活中的房屋中介，首先中介会收集市场上的房源，分别和各个房源的房东建立联系。当我们需要租房的时候，并不需要我们四处寻找各类租房信息。我们直接找房屋中介，中介就会根据你的需求提供相应的房屋信息。大大提升了租房的效率，减少了你与各类房东之间的沟通次数。
 
@@ -229,7 +229,7 @@ public class BeanFactoryImpl implements BeanFactory{
 }
 ```
 
-首先我们看到在 BeanFactory 的实现中。我们有两 HashMa:，beanMap 和 beanDefineMap。 beanDefineMap 存储的是对象的名称和对象对应的数据结构的映射。beanMap 用于保存 beanName和实例化之后的对象。
+首先我们看到在 BeanFactory 的实现中。我们有两 HashMap，beanMap 和 beanDefineMap。 beanDefineMap 存储的是对象的名称和对象对应的数据结构的映射。beanMap 用于保存 beanName和实例化之后的对象。
 
 容器初始化的时候，会调用 `BeanFactoryImpl.registerBean` 方法。把 对象的 BeanDefination 数据结构，存储起来。
 
