@@ -4,32 +4,33 @@ date: 2018-01-22 19:10:45
 tags:
 ---
 
-在高并发系统中，我们经常遇到这样的需求：系统产生大量的请求，但是这些请求实时性要求不高。我们就可以将这些请求合并，达到一定数量我们统一提交。最大化的利用系统性能。提升系统的吞吐性能。
+在高并发系统中，我们经常遇到这样的需求：系统产生大量的请求，但是这些请求实时性要求不高。我们就可以将这些请求合并，达到一定数量我们统一提交。最大化的利用系统性IO,提升系统的吞吐性能。
 
-所以请求合并框架的两个需求：
+所以请求合并框架需要考虑以下两个需求：
 
 1. 当请求收集到一定数量时提交数据
 2. 一段时间后如果请求没有达到指定的数量也进行提交
 
-我们这一讲就实现这样一个需求。
+我们就聊聊一如何实现这样一个需求。
 
-阅读这篇文章你将会了解到
+阅读这篇文章你将会了解到:
 
 * ScheduledThreadPoolExecutor
 * 阻塞队列
 * 线程安全的参数
-* LockSuport
+* LockSuppor的使用
 
-## 设计思路和实现
+<!--more-->
 
-我们就讲讲这个东西的思路是什么。希望大家能够学习到分析问题，设计模块的一些套路。
+## 设计思路和实现 
+
+我们就聊一聊实现这个东西的具体思路是什么。希望大家能够学习到分析问题，设计模块的一些套路。
 
 1. 底层使用什么数据结构来持有需要合并的请求？
-
- * 既然我们的系统是在高并发的环境下使用，那我们肯定不能使用，普通的`ArrayList`来持有。我们可以使用阻塞队列来持有需要合并的请求。
- * 我们的数据结构需要提供一个 add() 的方法给外部提交数据。当外部add数据以后检查队列里面的数据的个数是否达到我们限额？达到数量提交数据，不达到继续等待。
- * 数据结构还需要提供一个timeOut()的调用方法，外部有一个计时器定时调用这个timeOut方法，如果方法被调用，则直接向远程提交数据。
- * 条件满足的时候提交线程执行，条件不满足的时候线程应当暂停，等待外部提交数据。所以我们可以考虑使用 `LockSuppor.park()`和`LockSuppor.unpark` 来操作线程。
+    * 既然我们的系统是在高并发的环境下使用，那我们肯定不能使用，普通的`ArrayList`来持有。我们可以使用阻塞队列来持有需要合并的请求。
+    * 我们的数据结构需要提供一个 add() 的方法给外部，用于提交数据。当外部add数据以后，需要检查队列里面的数据的个数是否达到我们限额？达到数量提交数据，不达到继续等待。
+    * 数据结构还需要提供一个timeOut()的方法，外部有一个计时器定时调用这个timeOut方法，如果方法被调用，则直接向远程提交数据。
+    * 条件满足的时候线程执行提交动作，条件不满足的时候线程应当暂停，等待队列达到提交数据的条件。所以我们可以考虑使用 `LockSuppor.park()`和`LockSuppor.unpark` 来暂停和激活操作线程。
 
 经过上面的分析，我们就有了这样一个数据结构：
 
@@ -40,6 +41,7 @@ private static class FlushThread<Item> implements Runnable{
 
         //队列大小
         private final int bufferSize;
+        //操作间隔
         private int flushInterval;
 
         //上一次提交的时间。
@@ -52,6 +54,7 @@ private static class FlushThread<Item> implements Runnable{
         //达成条件后具体执行的方法
         private final Processor<Item> processor;
 
+        //构造函数
         public FlushThread(String name, int bufferSize, int flushInterval,int queueSize,Processor<Item> processor) {
             this.name = name;
             this.bufferSize = bufferSize;
@@ -72,19 +75,20 @@ private static class FlushThread<Item> implements Runnable{
 
         //提供给外部的超时方法
         public void timeOut(){
+            //超过两次提交超过时间间隔
             if(System.currentTimeMillis() - lastFlushTime >= flushInterval){
                 start();
             }
         }
         
-        //接触线程的阻塞
+        //解除线程的阻塞
         private void start(){
             LockSupport.unpark(writer);
         }
 
-        //当前的数据是否到到要求
+        //当前的数据是否大于提交的条件
         private void flushOnDemand(){
-            if(queue.size() > bufferSize){
+            if(queue.size() >= bufferSize){
                 start();
             }
         }
@@ -128,7 +132,7 @@ private static class FlushThread<Item> implements Runnable{
 
 2. 如何实现定时提交呢？
 
-通常我们遇到定时相关的需求，首先想到的应该是 `ScheduledThreadPoolExecutor`,如果你想到的是 `Thread.sleep()`...那需要再努力学习，多看源码了。
+通常我们遇到定时相关的需求，首先想到的应该是使用 `ScheduledThreadPoolExecutor`定时来调用FlushThread 的 timeOut 方法,如果你想到的是 `Thread.sleep()`...那需要再努力学习，多看源码了。
 
 3. 怎样进一步的提升系统的吞吐量？
 
@@ -144,6 +148,7 @@ public class Flusher<Item> {
 
     private AtomicInteger index;
 
+    //防止多个线程同时执行。增加一个随机数间隔
     private static final Random r = new Random();
 
     private static final int delta = 50;
@@ -170,6 +175,7 @@ public class Flusher<Item> {
         }
     }
 
+    // 对 index 取模，保证多线程都能被add
     public boolean add(Item item){
         int len = flushThreads.length;
         if(len == 1){
@@ -181,6 +187,7 @@ public class Flusher<Item> {
 
     }
 
+    //上文已经描述
     private static class FlushThread<Item> implements Runnable{
         ...省略
     }
@@ -189,7 +196,6 @@ public class Flusher<Item> {
 ```
 
 4. 面向接口编程，提升系统扩展性：
-
 
 ```java
 public interface Processor<T> {
@@ -253,8 +259,8 @@ end flush
 
 ```
 
-我们发现并没有达到10个数字就出发了flush。应为超时还没有达到规定的5
-个数据，就出发了超时提交。
+我们发现并没有达到10个数字就触发了flush。因为出发了超时提交，虽然还没有达到规定的5
+个数据，但还是执行了 flush。
 
 如果我们去除 `Thread.sleep(1000);` 再看看结果：
 
@@ -279,4 +285,6 @@ end flush
 
 ## 总结
 
-一个比较生动的例子给大家讲解了一些多线程的具体运用。学习多线程应该多思考多动手，才会有比较好的效果。希望这篇文章大家读完以后有所收获。欢迎交流。
+一个比较生动的例子给大家讲解了一些多线程的具体运用。学习多线程应该多思考多动手，才会有比较好的效果。希望这篇文章大家读完以后有所收获，欢迎交流。
+
+github地址:[https://github.com/diaozxin007/framework](https://github.com/diaozxin007/framework)
