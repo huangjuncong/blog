@@ -1,8 +1,10 @@
 ---
-title: 高并发环境下的请求合并
+title: 徒手撸框架--高并发环境下的请求合并
 date: 2018-01-22 19:10:45
-tags:
+tags: [java,高并发,请求合并]
 ---
+
+原文地址：[https://www.xilidou.com/2018/01/22/merge-request/](https://www.xilidou.com/2018/01/22/merge-request/)
 
 在高并发系统中，我们经常遇到这样的需求：系统产生大量的请求，但是这些请求实时性要求不高。我们就可以将这些请求合并，达到一定数量我们统一提交。最大化的利用系统性IO,提升系统的吞吐性能。
 
@@ -288,3 +290,9 @@ end flush
 一个比较生动的例子给大家讲解了一些多线程的具体运用。学习多线程应该多思考多动手，才会有比较好的效果。希望这篇文章大家读完以后有所收获，欢迎交流。
 
 github地址:[https://github.com/diaozxin007/framework](https://github.com/diaozxin007/framework)
+
+
+徒手撸框架系列文章地址：
+
+[徒手撸框架--实现IoC](https://www.xilidou.com/2018/01/08/spring-ioc/)
+[徒手撸框架--实现Aop](https://www.xilidou.com/2018/01/13/spring-aop/)
