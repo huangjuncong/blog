@@ -4,7 +4,7 @@
 
 # Site
 title: 犀利豆的博客
-subtitle:
+subtitle: 高质量的java技术博客
 description: 北邮本科，University of Leicester EE 研究生，Java后端开发，目前就职五八
 author: Zhengxin Diao
 email: diaozxin@163.com
@@ -91,6 +91,11 @@ deploy:
   repo: https://github.com/diaozxin007/diaozxin007.github.io.git
   branch: master
 
+feed:
+    type: atom
+    path: atom.xml
+    limit: 100
+
 jsonContent:
   meta: false
   pages: false
@@ -106,6 +111,7 @@ jsonContent:
     comments: false
     link: false
     permalink: false
-    excerpt: false
+    excerpt: fals
     categories: false
     tags: true
+
