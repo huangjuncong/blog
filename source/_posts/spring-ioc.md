@@ -17,13 +17,13 @@ Spring 作为 J2ee 开发事实上的标准，是每个Java开发人员都需要
 
 <!--more-->
 
-## IoC 是什么？
+# IoC 是什么？
 
 wiki百科的解释是：
 
 >控制反转（Inversion of Control，缩写为IoC），是面向对象编程中的一种设计原则，可以用来减低计算机代码之间的耦合度。其中最常见的方式叫做依赖注入（Dependency Injection，简称DI）。通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体，将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
 
-## Ioc 有什么用？
+# Ioc 有什么用？
 
 看完上面的解释你一定没有理解什么是 Ioc，因为是第一次看见上面的话也觉得云里雾里。
 
@@ -31,27 +31,27 @@ wiki百科的解释是：
 
 我们知道Java 是一门面向对象的语言，在 Java 中 Everything is Object，我们的程序就是由若干对象组成的。当我们的项目越来越大，合作的开发者越来越多的时候，我们的类就会越来越多，类与类之间的引用就会成指数级的增长。如下图所示：
 
-![](https://ws4.sinaimg.cn/large/006tNc79ly1fnd1qwnp8qj30aa06ot8t.jpg)
+![混乱](https://ws4.sinaimg.cn/large/006tNc79ly1fnd1qwnp8qj30aa06ot8t.jpg)
 
 这样的工程简直就是灾难，如果我们引入 Ioc 框架。由框架来维护类的生命周期和类之间的引用。我们的系统就会变成这样：
 
-![](https://ws4.sinaimg.cn/large/006tKfTcly1fnd1yq1vzpj30aa06v0sr.jpg)
+![有结构](https://ws4.sinaimg.cn/large/006tKfTcly1fnd1yq1vzpj30aa06v0sr.jpg)
 
 这个时候我们发现，我们类之间的关系都由 IoC 框架负责维护类，同时将类注入到需要的类中。也就是类的使用者只负责使用，而不负责维护。把专业的事情交给专业的框架来完成。大大的减少开发的复杂度。
 
 用一个类比来理解这个问题。Ioc 框架就是我们生活中的房屋中介，首先中介会收集市场上的房源，分别和各个房源的房东建立联系。当我们需要租房的时候，并不需要我们四处寻找各类租房信息。我们直接找房屋中介，中介就会根据你的需求提供相应的房屋信息。大大提升了租房的效率，减少了你与各类房东之间的沟通次数。
 
-## Spring 的 IoC 是怎么实现的
+# Spring 的 IoC 是怎么实现的
 
 了解Spring框架最直接的方法就阅读Spring的源码。但是Spring的代码抽象的层次很高，且处理的细节很高。对于大多数人来说不是太容易理解。我读了Spirng的源码以后以我的理解做一个总结,Spirng IoC 主要是以下几个步骤。
 
     1. 初始化 IoC 容器。
     2. 读取配置文件。
-    3. 将配置文件转换为容器识别对的数据结构（这个数据结构在Spring中叫做 BeanDefinition） 
+    3. 将配置文件转换为容器识别对的数据结构（这个数据结构在Spring中叫做 BeanDefinition
     4. 利用数据结构依次实例化相应的对象
     5. 注入对象之间的依赖关系
 
-## 自己实现一个IoC框架
+# 自己实现一个IoC框架
 
 为了方便，我们参考 Spirng 的 IoC 实现，去除所有与核心原理无关的逻辑。极简的实现 IoC 的框架。 项目使用 json 作为配置文件。使用 maven 管理 jar 包的依赖。
 
@@ -61,11 +61,11 @@ wiki百科的解释是：
 
 首先我们看看这个框架的基本结构：
 
-![](https://ws1.sinaimg.cn/large/006tKfTcly1fndrb3d0ofj308107cmxf.jpg)
+![基本结构](https://ws1.sinaimg.cn/large/006tKfTcly1fndrb3d0ofj308107cmxf.jpg)
 
 从宏观上观察一下这个框架，包含了3个package、在包 bean 中定义了我们框架的数据结构。core 是我们框架的核心逻辑所在。utils 是一些通用工具类。接下来我们就逐一讲解一下：
 
-### 1. bean 定义了框架的数据结构
+## 1. bean 定义了框架的数据结构
 
 `BeanDefinition` 是我们项目的核心数据结构。用于描述我们需要 IoC 框架管理的对象。
 
@@ -86,11 +86,13 @@ public class BeanDefinition {
 
 }
 ```
+
 包含了对象的 name，class的名称。如果是接口的实现，还有该对象实现的接口。以及构造函数的传参的列表 `constructorArgs` 和需要注入的参数列表 `propertyArgs。
 
-### 2. 再看看我们的工具类包里面的对象：
+## 2. 再看看我们的工具类包里面的对象：
 
 `ClassUtils` 负责处理 Java 类的加载,代码如下：
+
 ```java
 public class ClassUtils {
     public static ClassLoader getDefultClassLoader(){
@@ -106,6 +108,7 @@ public class ClassUtils {
     }
 }
 ```
+
 我们只写了一个方法，就是通过 className 这个参数获取对象的 Class。
 
 `BeanUtils` 负责处理对象的实例化，这里我们使用了 cglib 这个工具包，代码如下：
@@ -145,7 +148,7 @@ public class ReflectionUtils {
 
 有了这几个趁手的工具，我们就可以开始完成 Ioc 框架的核心代码了。
 
-### 3. 核心逻辑
+## 3. 核心逻辑
 
 我的 IoC 框架，目前只支持一种 ByName 的注入。所以我们的 BeanFactory 就只有一个方法：
 
@@ -156,6 +159,7 @@ public interface BeanFactory {
 ```
 
 然后我们实现了这个方法：
+
 ```java
 public class BeanFactoryImpl implements BeanFactory{
 
@@ -174,12 +178,12 @@ public class BeanFactoryImpl implements BeanFactory{
         }
         //如果没有实例化，那就需要调用createBean来创建对象
         bean =  createBean(beanDefineMap.get(name));
-        
+
         if(bean != null) {
 
             //对象创建成功以后，注入对象需要的参数
             populatebean(bean);
-            
+
             //再把对象存入Map中方便下次使用。
             beanMap.put(name,bean;
         }
@@ -241,7 +245,7 @@ public class BeanFactoryImpl implements BeanFactory{
 
 所以我们可以知道 BeanFactory 是管理和生成对象的地方。
 
-### 4. 容器
+## 4. 容器
 
 我们所谓的容器，就是对BeanFactory的扩展，负责管理 BeanFactory。我们的这个IoC 框架使用 Json 作为配置文件，所以我们容器就命名为 JsonApplicationContext。当然之后你愿意实现 XML 作为配置文件的容器你就可以自己写一个 XmlApplicationContext，如果基于注解的容器就可以叫AnnotationApplcationContext。这些实现留个大家去完成。
 
@@ -272,7 +276,8 @@ public class JsonApplicationContext extends BeanFactoryImpl{
 
 至此，一个简单版的 IoC 框架就完成。
 
-### 5. 框架的使用
+## 5. 框架的使用
+
 我们写一个测试类来看看我们这个框架怎么使用：
 
 首先我们有三个对象
@@ -291,7 +296,7 @@ public class Mouth {
 }
 
 public class Robot {
-    //需要注入 hand 和 mouth 
+    //需要注入 hand 和 mouth
     private Hand hand;
     private Mouth mouth;
 
@@ -305,6 +310,7 @@ public class Robot {
 我们需要为我们的 Robot 机器人注入 hand 和 mouth。
 
 配置文件：
+
 ```json
 [
   {
@@ -334,7 +340,9 @@ public class Test {
     }
 }
 ```
+
 运行以后输出：
+
 ```shell
 
 挥一挥手
@@ -347,7 +355,7 @@ Process finished with exit code 0
 
 至此我们 Ioc 框架开发完成。
 
-## 总结
+# 总结
 
 这篇文章读完以后相信你一定也实现了一个简单的 IoC 框架。
 
@@ -356,7 +364,3 @@ Process finished with exit code 0
 下一篇文章 应该会是 《徒手撸框架--实现AOP》。
 
 github 地址：https://github.com/diaozxin007/xilidou-framework
-
-
-
-

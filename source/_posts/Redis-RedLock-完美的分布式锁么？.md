@@ -13,7 +13,7 @@ tags: [Redis,分布式锁,后端]
 
 <!--more-->
 
-## Martin 的批评
+# Martin 的批评
 
 Martin上来就问，我们要锁来干啥呢？两个原因：
 
@@ -74,7 +74,7 @@ Martin 还指出了，RedLock 是一个**严重依赖系统时钟**的分布式�
 
 RedLock 的作者，同时也Redis 的作者对 Martin的文章也做了回应，条理也是相当的清楚。
 
-## antirez 的回应
+# antirez 的回应
 
 antirez 看到了 Martin 的文章以后，就写了一篇文章回应。剧情会不会反转呢？
 
@@ -105,6 +105,7 @@ antirez 认为，首先在实际的系统中，从两个方面来看：
 对于第一个问题。上文已经提到了，RedLock做了一些微小的工作，但是没办法完全避免。其他带有自动释放的分布式锁也没有办法。
 
 第二个问题，Martin认为系统时间的阶跃主要来自两个方面：
+
 1. 人为修改。
 2. 从NTP服务收到了一个跳跃时时钟更新。
 
@@ -118,23 +119,20 @@ NTP受到一个阶跃时钟更新，对于这个问题，需要通过运维来�
 
 最后， antirez 还打出了一个暴击，既然 Martin 提出的系统使用 fecting token 保证数据的顺序处理。还需要 RedLock，或者别的分布式锁 干啥？？
 
-## 回顾
+# 回顾
+
 看完二人的博客来往，感觉就是看武侠戏里面的高手过招，相当得爽快。二人思路清晰，Martin 上来就看到RedLock的死穴，一顿猛打，antirez见招拆招成功化解。
 至于二人谁对谁错？
 我觉得，每一个系统设计都有自己的侧重或者局限。工程也不是完美的。在现实中工程中不存在完美的解决方案。我们应当深入了解其中的原理，了解解决方案的优缺点。明白选用方案的局限性。是否可以接受方案的局限带来的后果。
 架构本来就是一门平衡的艺术。
 
-## 最后
+# 最后
+
 Martin 推荐使用ZooKeeper 实现分布事务锁。Zookeeper 和 Redis的锁有什么区别？ Zookeeper解决了Redis没有解决的问题了么？且听下回分解。
 
-## 参考：
+# 参考
+
 1. [Distributed locks with Redis](https://redis.io/topics/distlock#distributed-locks-with-redis)
 2. [How to do distributed locking](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html)
 3. [Is Redlock safe?](http://antirez.com/news/101)
-1. [基于Redis的分布式锁到底安全吗（上）？](http://zhangtielei.com/posts/blog-redlock-reasoning.html)
-
-
-
-
-
-
+4. [基于Redis的分布式锁到底安全吗（上）？](http://zhangtielei.com/posts/blog-redlock-reasoning.html)

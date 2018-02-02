@@ -8,7 +8,7 @@ tags: [java,aop,spring]
 
 上一讲我们讲解了Spring 的 IoC 实现。大家可以去我的博客查看[点击链接](https://www.xilidou.com/2018/01/08/spring-ioc/)，这一讲我们继续说说 Spring 的另外一个重要特性 AOP。之前在看过的大部分教程，对于Spring Aop的实现讲解的都不太透彻，大部分文章介绍了Spring Aop的底层技术使用了动态代理，至于Spring Aop的具体实现都语焉不详。这类文章看以后以后，我脑子里浮现的就是这样一个画面：
 
-![](https://ws4.sinaimg.cn/large/006tNc79ly1fnmxxxany9j30c80m0gm9.jpg)
+![画马](https://ws4.sinaimg.cn/large/006tNc79ly1fnmxxxany9j30c80m0gm9.jpg)
 
 我的想法就是，带领大家，首先梳理 Spring Aop的实现，然后屏蔽细节，自己实现一个Aop框架。加深对Spring Aop的理解。在了解上图1-4步骤的同时，补充 4 到 5 步骤之间的其他细节。
 
@@ -22,9 +22,11 @@ tags: [java,aop,spring]
 <!--more-->
 
 # Aop 是什么？
+
 面向切面的程序设计（aspect-oriented programming，AOP）。通过预编译方式和运行期动态代理实现程序功能统一维护的一种技术。
 
 # 为什么需要使用Aop？
+
 面向切面编程，实际上就是通过预编译或者动态代理技术在不修改源代码的情况下给原来的程序统一添加功能的一种技术。我们看几个关键词，第一个是“动态代理技术”，这个就是Spring Aop实现底层技术。第二个“不修改源代码”，这个就是Aop最关键的地方，也就是我们平时所说的非入侵性。。第三个“添加功能”，不改变原有的源代码，为程序添加功能。
 
 举个例子：如果某天你需要统计若干方法的执行时间，如果不是用Aop技术，你要做的就是为每一个方法开始的时候获取一个开始时间，在方法结束的时候获取结束时间。二者之差就是方法的执行时间。如果对每一个需要统计的方法都做如上的操作，那代码简直就是灾难。如果我们使用Aop技术，在不修改代码的情况下，添加一个统计方法执行时间的切面。代码就变得十分优雅。具体这个切面怎么实现？看完下面的文章你一定就会知道。
@@ -56,7 +58,7 @@ Spring 的 Aop 实现主要以下几个步骤：
 
 首先来看看代码的基本结构。
 
-![](https://ws4.sinaimg.cn/large/006tNc79ly1fnombbcrkhj30c00heabs.jpg)
+![代码结构](https://ws4.sinaimg.cn/large/006tNc79ly1fnombbcrkhj30c00heabs.jpg)
 
 代码结构比上一讲的 IoC 复杂不少。我们首先对包每个包都干了什么做一个简单介绍。
 
@@ -71,7 +73,7 @@ Spring 的 Aop 实现主要以下几个步骤：
 
 下面我们从这个链条的最末端讲起：
 
-### `invcation`
+## `invocation`
 
 首先 `MethodInvocation` 作为所有方法调用的接口。要描述一个方法的调用包含三个方法，获取方法本身`getMethod`,获取方法的参数`getArguments`，还有执行方法本身`proceed()`。
 
@@ -84,15 +86,17 @@ public interface MethodInvocation {
 ```
 
 `ProxyMethodInvocation` 看名字就知道，是代理方法的调用，增加了一个获取代理的方法。
+
 ```java
 public interface ProxyMethodInvocation extends MethodInvocation {
     Object getProxy();
 }
 ```
 
-### `interceptor`
+## `interceptor`
 
 `AopMethodInterceptor` 是 Aop 容器所有拦截器都要实现的接口：
+
 ```java
 public interface AopMethodInterceptor {
     Object invoke(MethodInvocation mi) throws Throwable;
@@ -100,6 +104,7 @@ public interface AopMethodInterceptor {
 ```
 
 同时我们实现了两种拦截器`BeforeMethodAdviceInterceptor`和`AfterRunningAdviceInterceptor`,顾名思义前者就是在方法执行以前拦截，后者就在方法运行结束以后拦截：
+
 ```java
 public class BeforeMethodAdviceInterceptor implements AopMethodInterceptor {
     private BeforeMethodAdvice advice;
@@ -135,6 +140,7 @@ public class AfterRunningAdviceInterceptor implements AopMethodInterceptor {
 看了上面的代码我们发现，实际上 `mi.proceed()`才是执行原有的方法。而`advice`我们上文就说过，是描述增强的方法”干什么“的数据结构，所以对于这个before拦截器，我们就把advice对应的增强方法放在了真正执行的方法前面。而对于after拦截器而言，就放在了真正执行的方法后面。
 
 这个时候我们过头来看最关键的 `ReflectioveMethodeInvocation`
+
 ```java
 public class ReflectioveMethodeInvocation implements ProxyMethodInvocation {
     public ReflectioveMethodeInvocation(Object proxy, Object target, Method method, Object[] arguments, List<AopMethodInterceptor> interceptorList) {
@@ -193,7 +199,7 @@ public class ReflectioveMethodeInvocation implements ProxyMethodInvocation {
 
 }
 ```
-
+
 在实际的运用中，我们的方法很可能被多个方法的拦截器所增强。所以我们，使用了一个list来保存所有的拦截器。所以我们需要递归的去增加拦截器。当处理完了所有的拦截器之后，才会真正调用调用被增强的方法。我们可以认为，前文所述的动态的织入代码就发生在这里。
 
 ```java
@@ -212,11 +218,13 @@ public class CglibMethodInvocation extends ReflectioveMethodeInvocation {
     }
 }
 ```
+
 `CglibMethodInvocation` 只是重写了 `invokeOriginal` 方法。使用代理类来调用被增强的方法。
 
-### advisor
+## advisor
 
 这个包里面都是一些描述切面的数据结构，我们讲解两个重要的。
+
 ```java
 @Data
 public class Advisor {
@@ -227,7 +235,9 @@ public class Advisor {
 
 }
 ```
+
 如上文所说，advisor 描述了在哪里，干什么。
+
 ```java
 @Data
 public class AdvisedSupport extends Advisor {
@@ -246,10 +256,13 @@ public class AdvisedSupport extends Advisor {
 
 }
 ```
+
 这个`AdvisedSupport`就是 我们Aop框架能够理解的数据结构，这个时候问题就变成了--对于哪个目标，增加哪些拦截器。
 
-### `core`
+## `core`
+
 有了上面的准备，我们就开始讲解核心逻辑了。
+
 ```java
 @Data
 public class CglibAopProxy implements AopProxy{
@@ -286,11 +299,14 @@ public class CglibAopProxy implements AopProxy{
     }
 }
 ```
+
 `CglibAopProxy`就是我们代理对象生成的核心方法。使用 cglib 生成代理类。我们可以与之前ioc框架的代码。比较发现区别就在于：
+
 ```java
     Callback callbacks = getCallBack(advised);
     enhancer.setCallback(callbacks);
 ```
+
 callback与之前不同了，而是写了一个`getCallback()`的方法，我们就来看看 getCallback 里面的 `DynamicAdvisedIcnterceptor`到底干了啥。
 
 篇幅问题，这里不会介绍 cglib 的使用，对于callback的作用，不理解的同学需要自行学习。
@@ -312,14 +328,16 @@ public class DynamicAdvisedInterceptor implements MethodInterceptor{
         return invocation.proceed();
     }
 }
-``` 
+```
 
 这里需要注意，`DynamicAdvisedInterceptor`这个类实现的 MethodInterceptor 是 gclib的接口，并非我们之前的 AopMethodInterceptor。
 
 我们近距离观察 intercept 这个方法我们看到：
+
 ```java
 MethodInvocation invocation = new CglibMethodInvocation(obj,targetSource.getTagetObject(),method, args,interceptorList,proxy);
 ```
+
 通过这行代码，我们的整个逻辑终于连起来了。也就是这个动态的拦截器，把我们通过 `CglibMethodInvocation` 织入了增强代码的方法，委托给了 cglib 来生成代理对象。
 
 至此我们的 Aop 的核心功能就实现了。
@@ -391,6 +409,7 @@ public class AopBeanFactoryImpl extends BeanFactoryImpl{
 }
 
 ```
+
 `AopBeanFactoryImpl`是我们产生代理对象的工厂类，继承了上一讲我们实现的 IoC 容器的BeanFactoryImpl。重写了 getBean方法，如果是一个切面代理类，我们使用Aop框架生成代理类，如果是普通的对象，我们就用原来的IoC容器进行依赖注入。
 `getAdvisedSupport`就是获取 Aop 框架认识的数据结构。
 
@@ -399,6 +418,7 @@ public class AopBeanFactoryImpl extends BeanFactoryImpl{
 ## 写个方法测试一下
 
 我们需要统计一个方法的执行时间。面对这个需求我们怎么做？
+
 ```java
 public class StartTimeBeforeMethod implements BeforeMethodAdvice{
     @Override
@@ -422,9 +442,11 @@ public class EndTimeAfterMethod implements AfterRunningAdvice {
     }
 }
 ```
+
 方法开始前，记录时间，保存到 ThredLocal里面，方法结束记录时间，打印时间差。完成统计。
 
 目标类：
+
 ```java
 public class TestService {
     public void testMethod() throws InterruptedException {
@@ -435,6 +457,7 @@ public class TestService {
 ```
 
 配置文件：
+
 ```json
 [
   {
@@ -460,6 +483,7 @@ public class TestService {
   }
 ]
 ```
+
 测试类：
 
 ```java
@@ -474,6 +498,7 @@ public class MainTest {
 ```
 
 最终我们的执行结果：
+
 ``` shell
 开始计时
 this is a test method
@@ -492,9 +517,6 @@ Spring的源码实在是复杂，阅读起来常常给人极大的挫败感，
 
 下一篇文章，我会给大家讲讲阅读开源代码的一些方法和我自己的体会，敬请期待。
 
-## 最后 
+# 最后
 
 github：https://github.com/diaozxin007/framework
-
-
-
