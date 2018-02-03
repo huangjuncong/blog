@@ -363,4 +363,7 @@ Process finished with exit code 0
 
 下一篇文章 应该会是 《徒手撸框架--实现AOP》。
 
-github 地址：https://github.com/diaozxin007/xilidou-framework
+github 地址：[https://github.com/diaozxin007/xilidou-framework](https://github.com/diaozxin007/xilidou-framework)
+
+欢迎关注我的微信公众号
+![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)

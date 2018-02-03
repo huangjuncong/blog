@@ -297,3 +297,7 @@ github地址:[https://github.com/diaozxin007/framework](https://github.com/diaoz
 
 [徒手撸框架--实现IoC](https://www.xilidou.com/2018/01/08/spring-ioc/)
 [徒手撸框架--实现Aop](https://www.xilidou.com/2018/01/13/spring-aop/)
+
+
+欢迎关注我的微信公众号
+![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
