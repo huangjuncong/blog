@@ -4,6 +4,8 @@ date: 2018-02-01 13:56:06
 tags: [java,cas,高并发,锁]
 ---
 
+原文地址：[https://www.xilidou.com/2018/02/01/java-cas/](https://www.xilidou.com/2018/02/01/java-cas/)
+
 CAS 是现代操作系统，解决并发问题的一个重要手段，最近在看 `eureka` 的源码的时候。遇到了很多 CAS 的操作。今天就系统的回顾一下 Java 中的CAS。
 
 阅读这篇文章你将会了解到：
@@ -247,7 +249,13 @@ CAS 是整个编程重要的思想之一。整个计算机的实现中都有CAS�
 
 停下脚步，回顾基础和经典或许对于技术的提升更大一些。
 
-希望这篇文章对大家有所提升。
+希望这篇文章对大家有所帮助。
+
+徒手撸框架系列文章地址：
+
+[徒手撸框架--高并发环境下的请求合并](https://www.xilidou.com/2018/01/22/merge-request/)
+[徒手撸框架--实现IoC](https://www.xilidou.com/2018/01/08/spring-ioc/)
+[徒手撸框架--实现Aop](https://www.xilidou.com/2018/01/13/spring-aop/)
 
 欢迎关注我的微信公众号
 ![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
