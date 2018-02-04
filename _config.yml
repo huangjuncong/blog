@@ -80,7 +80,7 @@ theme: yilia
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
 - type: rsync
-  host: 47.92.111.226
+  host: xilidou.com
   user: root
   root: /var/www/html
   port: 22
