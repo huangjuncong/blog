@@ -4,6 +4,8 @@ date: 2018-02-09 23:42:27
 tags: [java,线程池,多线程]
 ---
 
+原文地址:[https://www.xilidou.com/2018/02/09/thread-corepoolsize/](https://www.xilidou.com/2018/02/09/thread-corepoolsize/)
+
 最近在看[《Java并发编程的艺术》](https://union-click.jd.com/jdc?d=igYcKg)回顾线程池的原理和参数的时候发现一个问题，如果 corePoolSize = 0 且 阻塞队列是无界的。线程池将如何工作？
 
 我们先回顾一下书里面描述线程池`execute()`工作的逻辑：
