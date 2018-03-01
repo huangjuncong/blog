@@ -363,6 +363,10 @@ Process finished with exit code 0
 
 下一篇文章 应该会是 《徒手撸框架--实现AOP》。
 
+# 更新
+
+感谢 Heeexy 同学为这个不成熟的框架增加了循环依赖的处理。大家可以阅读这篇文章[《极简 Spring 框架 -- 浅析循环依赖》](http://heeexy.com/2018/01/28/IoC/)
+
 github 地址：[https://github.com/diaozxin007/xilidou-framework](https://github.com/diaozxin007/xilidou-framework)
 
 欢迎关注我的微信公众号
