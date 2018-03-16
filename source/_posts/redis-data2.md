@@ -1,7 +1,7 @@
 ---
 title: Redis 的基础数据结构（二） 整数集合、跳跃表、压缩列表
 date: 2018-03-13 22:14:00
-tags: [iniset,skiplist,ziplist]
+tags: [iniset,skiplist,ziplist,redis]
 ---
 
 原文地址：[https://www.xilidou.com/2018/03/13/redis-data2/](https://www.xilidou.com/2018/03/13/redis-data2/)
@@ -42,7 +42,7 @@ typedef struct intset {
 #define INTSET_ENC_INT64 (sizeof(int64_t))
 ```
 
-实际上我们可以看出来。 Redis encoding的类型，就是指数据的大小。作为一个内存数据库，采用这种设计就是为了节约内存。对于一个数据我们可以画一个图来帮助理解：
+实际上我们可以看出来。 Redis encoding的类型，就是指数据的大小。作为一个内存数据库，采用这种设计就是为了节约内存。
 
 
 既然有从小到大的三个数据结构，在插入数据的时候尽可能使用小的数据结构来节约内存，如果插入的数据大于原有的数据结构，就会触发扩容。

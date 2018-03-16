@@ -12,9 +12,9 @@ tags: [Alfred,youdao,workflow]
 
 ## 截图：
 
-![截图.png](http://upload-images.jianshu.io/upload_images/4268675-fac34c568d30661a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![截图.png](https://xilidou.oss-cn-beijing.aliyuncs.com/img/youdao.png)
 
 ## 下载地址
-[有道 workflow 威力加强版](http://7u2r32.com1.z0.glb.clouddn.com/youdao_pro.alfredworkflow)
+[有道 workflow 威力加强版](https://xilidou.oss-cn-beijing.aliyuncs.com/img/youdao_pro.alfredworkflow)
 
 [github](https://github.com/diaozxin007/youdao)
