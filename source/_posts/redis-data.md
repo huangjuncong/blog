@@ -291,8 +291,6 @@ typedef struct dictType {
 * 在进行 rehash 的过程中，如果进行了 delete 和 update 等操作，会在两个哈希表上进行。如果是 find 的话优先在ht[0] 上进行，如果没有找到，再去 ht[1] 中查找。如果是 insert 的话那就只会在 ht[1]中插入数据。这样就会保证了 ht[1] 的数据只增不减，ht[0]的数据只减不增。
 
 
-欢迎关注我的微信公众号：
-![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
 
 
 
