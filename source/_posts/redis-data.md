@@ -4,7 +4,7 @@ date: 2018-03-12 12:46:44
 tags: [redis,list,map,hash]
 ---
 
-原文地址：[https://xilidou.com/2018/03/12/redis-data/](https://xilidou.com/2018/03/12/redis-data/)
+原文地址：[https://www.xilidou.com/2018/03/12/redis-data/](https://www.xilidou.com/2018/03/12/redis-data/)
 
 这周开始学习 Redis，看看Redis是怎么实现的。所以会写一系列关于 Redis的文章。这篇文章关于 Redis 的基础数据。阅读这篇文章你可以了解：
 
