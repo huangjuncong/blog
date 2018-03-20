@@ -168,12 +168,12 @@ static long long last_fast_cycle = 0; /* When last fast cycle ran. */
 
 # 后记
 
-这篇文章主要解释了 Redis 的数据库是怎么实现的，同时介绍了 Redis 处理过期键的逻辑。看 Redis 的代码越多越发现，实际上 Redis 一直在做的一件事情就是平衡，一直在平衡程序的空间和时间。其实平时的业务设计，就是在宏观上平衡，平衡系统的时间和空间。所以我想说的是，看源码是让我们从微观学习系统架构，是每一位架构师的必经之路。大家加油。
+这篇文章主要解释了 Redis 的数据库是怎么实现的，同时介绍了 Redis 处理过期键的逻辑。看 Redis 的代码越多越发现，实际上 Redis 一直在做的一件事情就是平衡，一直在平衡程序的空间和时间。其实平时的业务设计，就是在宏观上平衡，平衡宏观系统的时间和空间。所以，看源码是让我们从微观学习系统架构的良好途径，是架构师的成长的必经之路。
 
 我之前的三篇关于 Redis 的基础数据结构链接地址，欢迎大家阅读。
 
 
-[Redis 的基础数据结构（一） 可变字符串、链表、字典](https://xilidou.com/2018/03/12/redis-data/?fromblog=redis-server)
+[Redis 的基础数据结构（一） 可变字符串、链表、字典](https://www.xilidou.com/2018/03/12/redis-data/?fromblog=redis-server)
 
 
 [Redis 的基础数据结构（二） 整数集合、跳跃表、压缩列表](https://www.xilidou.com/2018/03/13/redis-data2/?blogfrom=redis-server)
