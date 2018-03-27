@@ -59,7 +59,7 @@ int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；
  * 可以理解为查询符合条件的事件
  * epfd 是 epoll_create() 创建的句柄。
  * epoll_event 用来存放从内核得到事件的集合
- * maxevents 获取的最大时间数
+ * maxevents 获取的最大事件数
  * timeout 等待超时时间
  */
 int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);
@@ -146,7 +146,7 @@ typedef struct aeFileEvent {
 
 `mask` 就是可以理解为事件的类型。
 
-其实 ae.c 向外提供的 api 还是“增删查”几个固定套路。
+除了使用 ae_peoll.c 提供的方法外,ae.c 还增加 “增删查” 的几个 API。
 
 * 增:`aeCreateFileEvent`
 * 删:`aeDeleteFileEvent`

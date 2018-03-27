@@ -25,7 +25,7 @@ Martin上来就问，我们要锁来干啥呢？两个原因：
 对于第二种原因，对正确性严格要求的场景（比如订单，或者消费），就算使用了 RedLock 算法仍然不能保证锁的正确性。
 
 我们分析一下 RedLock 的有啥缺陷吧：
-![unsafe-lock](http://7u2r32.com1.z0.glb.clouddn.com/unsafe-lock.png)
+![unsafe-lock](https://xilidou.oss-cn-beijing.aliyuncs.com/img/unsafe-lock.png)
 
 作者 Martin 给出这张图，首先我们上一讲说过，RedLock中，为了防止死锁，锁是具有过期时间的。这个过期时间被 Martin 抓住了小辫子。
 
@@ -43,7 +43,7 @@ Martin上来就问，我们要锁来干啥呢？两个原因：
 
 文章读到这里，我都绝望了，还好 Martin给出了一个解决的方案：
 
-![fencing-tokens](http://7u2r32.com1.z0.glb.clouddn.com/fencing-tokens.png)
+![fencing-tokens](https://xilidou.oss-cn-beijing.aliyuncs.com/img/fencing-tokens.png)
 
 为锁增加一个 token-fencing。
 
@@ -57,7 +57,7 @@ Martin 还指出了，RedLock 是一个**严重依赖系统时钟**的分布式�
 
 还是这个过期时间的小辫子。如果某个 Redis Master的系统时间发生了错误，造成了它持有的锁提前过期被释放。
 
-* Client 1 从 A、B、D、E五个节点中，获取了 A、B、C三个节点获取到锁，我们认为他持有了锁
+* Client 1 从 A、B、C、D、E五个节点中，获取了 A、B、C三个节点获取到锁，我们认为他持有了锁
 * 这个时候，由于 B 的系统时间比别的系统走得快，B就会先于其他两个节点优先释放锁。
 * Clinet 2 可以从 B、D、E三个节点获取到锁。在整个分布式系统就造成 两个 Client 同时持有锁了。
 
@@ -113,7 +113,7 @@ antirez 认为，首先在实际的系统中，从两个方面来看：
 NTP受到一个阶跃时钟更新，对于这个问题，需要通过运维来保证。需要将阶跃的时间更新到服务器的时候，应当采取小步快跑的方式。多次修改，每次更新时间尽量小。****
 
 说个题外话，读到这里我突然理解了运维同学的邮件：
-![Screenshot 2017-10-29 3.43.22](http://7u2r32.com1.z0.glb.clouddn.com/Screenshot 2017-10-29 3.43.22.png)
+![Screenshot 2017-10-29 3.43.22](https://xilidou.oss-cn-beijing.aliyuncs.com/img/Screenshot%202017-10-29%203.43.22.png)
 
 所以严格来说确实， RedLock建立在了 Time 是可信的模型上，理论上 Time 也是发生错误，但是在现实中，良好的运维和工程一些机制是可以最大限度的保证 Time 可信。
 
