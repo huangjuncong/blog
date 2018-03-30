@@ -146,3 +146,28 @@ buf 是一个长度为 REDIS_REPLY_CHUNK_BYTES 的数组。Redis 执行相应的
 5. 执行以后将结过存入 buf & bufpos & reply 中，返回给调用方。
  
 
+# Redis Server (服务端)
+
+上文是从 redis client 的角度来观察命令的执行，文章接下来的部分将会从 Redis 的代码层面，微观的观察 Redis Server 是怎么实现命令的执行的。
+
+
+## redisServer 的启动
+
+
+
+
+在上一篇文《》我们讲解过，redis 使用不同的事件处理器，处理不同的事件。
+
+## redisClient 的创建
+
+当有一个远程客户端连接到 Redis 的服务器，Redis 将会调用 
+
+`networing.c/acceptTcpHandler` 事件处理器，
+
+`networing.c/acceptCommonHandler` 事件处理器。这个处理器的作用主要就是：
+
+* 调用 `createClient()` 方法创建 redisClient。
+* 检查是否超过 server 允许的 rediClient 数量的上限
+* 如果超过就拒绝远程连接
+* 否则更新连接的统计次数
+* 并更新 redisClinet 的 flags 字段
