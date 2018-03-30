@@ -265,7 +265,7 @@ aeCreateFileEvent(server.el, c->fd, AE_WRITABLE,sendReplyToClient, c) == AE_ERR)
 1. 远程客户端连接到 redis 后，redis服务端会为远程客户端创建一个 redisClient 作为代理。
 2. redis 会读取嵌套字中的数据，写入 querybuf 中。
 3. 解析 querybuf 中的命令，记录到 argc 和 argv 中。
-4. 根据 argv[0] 查找对应的 recommend。
+4. 根据 argv[0] 查找对应的 recommand。
 5. 执行 recommend 对应的执行函数。
 6. 执行以后将结果存入 buf & bufpos & reply 中。
 7. 返回给调用方。返回数据的时候，会控制写入数据量的大小，如果过大会分成若干次。保证 redis 的相应时间。
