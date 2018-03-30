@@ -258,7 +258,7 @@ aeCreateFileEvent(server.el, c->fd, AE_WRITABLE,sendReplyToClient, c) == AE_ERR)
 
 向 eventloop 绑定了 `sendReplyToClient` 事件处理器。
 
-在 `sendReplyToClient` 中观察代码发现，如果 bufpos 大于 0，将会把 buf 发送给远程的客户端，如果链表 reply 的长度大于0，就会将遍历链表 reply，发送给远程的客户端，这里需要注意的是，为了避免 reply 的节点特别多，如果一直会写就会过度的占用资源引起相应慢，会设置 REDIS_MAX_WRITE_PER_EVENT 。当写入的总数量大于 REDIS_MAX_WRITE_PER_EVENT ，临时中断写入，将处理时间让给其他客户端，剩余的内容等下次写入就绪再继续写入。这样的套路我们一路走来看过太多了。
+在 `sendReplyToClient` 中观察代码发现，如果 bufpos 大于 0，将会把 buf 发送给远程的客户端，如果链表 reply 的长度大于0，就会将遍历链表 reply，发送给远程的客户端，这里需要注意的是，为了避免 reply 数据量过大，就会过度的占用资源引起 Redis 相应慢。为了解决这个问题，当写入的总数量大于 REDIS_MAX_WRITE_PER_EVENT 时，Redis 将会临时中断写入，记录操作的进度，将处理时间让给其他操作，剩余的内容等下次继续。这样的套路我们一路走来看过太多了。
 
 # 总结
 
