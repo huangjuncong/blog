@@ -4,11 +4,13 @@ date: 2018-04-01 16:51:26
 tags: [dubbo,rpc,java]
 ---
 
-今天开始研究dubbo 源码。
+今天开始将开启 dubbo 的源码研究。
 
 dubbo 是什么？
 
 dubbo 是阿里巴巴开发的一个基于 java 的开源的 RPC 框架。所谓 RPC 指的的是 Remote Procedure Call Protocol 远程过程调用协议。
+
+<!--more-->
 
 # 阅读代码前的准备
 
@@ -70,7 +72,7 @@ mvn idea:idea
 
 以上就是对 dubbo 的代码结构和运行步骤的简单介绍。dubbo 的源码学习也就算打开了一个序幕。
 
-下一篇文章就会从 dubbo-container 这个包开始逐步的介绍 dubbo 的源码实现。尽情期待。
+下一篇文章就会从 dubbo-container 这个包开始逐步的介绍 dubbo 的源码实现。敬请期待。
 
 
 
