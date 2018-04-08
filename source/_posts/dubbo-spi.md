@@ -9,6 +9,7 @@ tags:
 为什么需要这个 SPI 机制，因为往往对于同一个模块我们有不同的技术实现，最常见的就比如，jdbc，日志系统，xml的解析等。面向对象的编程中，我们推荐使用面向接口的编程。模块之间基于接口编程，模块之间不适用硬编码来进行编写，降低模块之间的耦合。一旦代码里涉及具体的实现类，就违反了可拔插的原则，如果需要替换一种实现，就需要修改代码。所以java就提供，为某个接口寻找服务实现的机制。
 
 # SPI 的约定：
+
 在jar包的 ClassPath 下面放置一个 META/service文件夹。
 
 * 在文件命是要扩展的接口全名
@@ -73,16 +74,15 @@ private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADE
 
 private static final ConcurrentMap<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<Class<?>, Object>();
 
-```  
+```
+
 EXTENSION_LOADERS 缓存了 class 和他对应的 ExtensionLoader。
 EXTENSION_INSTANCES 缓存的是 class 和对应的类的实例。
 
 在使用前会先从 map 中获取缓存，只有在获取不到class对应的缓存后，会创建对应的 ExtensionLoader 或者对应类的实例。接下来的源码中会有具体的分析。
 
-
 ```java
 
-    private static final ExtensionLoader<Container> loader = ExtensionLoader.getExtensionLoader(Container.class);
+private static final ExtensionLoader<Container> loader = ExtensionLoader.getExtensionLoader(Container.class);
 
 ```
-

@@ -16,13 +16,13 @@ dubbo 是阿里巴巴开发的一个基于 java 的开源的 RPC 框架。所谓
 
 1. 下载代码：
 
-```
+```git
 git clone https://github.com/apache/incubator-dubbo.git
 ```
 
 2. IDE 支持
 
-```
+```shell
 mvn idea:idea
 ```
 
@@ -47,7 +47,7 @@ mvn idea:idea
 
 这张图是从 dubbo 的官网上下载下来的：
 
-![](https://xilidou.oss-cn-beijing.aliyuncs.com/img/dubbo-architecture.png)
+![dubbo-architecture](https://xilidou.oss-cn-beijing.aliyuncs.com/img/dubbo-architecture.png)
 
 顺着序号我们来看看 dubbo 的各个模块是怎么工作的。
 
