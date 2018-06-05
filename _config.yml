@@ -71,6 +71,8 @@ time_format: HH:mm:ss
 per_page: 10
 pagination_dir: page
 
+disqus_shortname: xilidou
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
