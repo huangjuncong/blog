@@ -170,3 +170,7 @@ Raft 为了保证扩容的安全性，采用了两段two-phase）方法。
 * [Raft 中文翻译](https://github.com/maemual/raft-zh_cn)
 * [Raft java 实现](https://github.com/wenweihu86/raft-java.git)
 
+
+欢迎关注我的微信公众号：
+![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
+
