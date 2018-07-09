@@ -10,6 +10,8 @@ tags:
 
 # 演示如下：
 
+<embed src="https://imgcache.qq.com/tencentvideo_v1/playerv3/TPout.swf?max_age=86400&v=20161117&vid=p1343hsm107&auto=0" allowFullScreen="true" quality="high" width="480" height="400" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
+
 # 实现思路：
 
 使用了 Mac 上最出名的效率工具 `Alfred`。利用 `Alfred` 调用本地的 `python` 脚本，利用 http 模块，请求远程的 API 接口。
