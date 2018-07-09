@@ -1,12 +1,14 @@
 ---
 title: 撸码的福音--变量名生成器的实现
 date: 2018-07-09 11:26:04
-tags:
+tags: [alfred,效率,java]
 ---
 
 最近换工作以后，结结实实的写了几个月的业务。需求完结以后，就找找自己喜欢的东西写写，换个口味。
 
 撸码最难的就是给变量取名字了。所以就写一个变量生成器吧。
+
+<!--more-->
 
 # 演示如下：
 
@@ -200,8 +202,13 @@ if __name__ == '__main__':
 
 老规矩 github 地址：https://github.com/diaozxin007/HumpApi
 
-我之前还开发了一个利用 aflred 直接查询有道词典的 workflow。效果如下图：
+workflow 下载地址：[下载](https://xilidou.oss-cn-beijing.aliyuncs.com/img/hump.alfredworkflow)
+
+我之前还开发了一个利用 alfred 直接查询有道词典的 workflow。效果如下图：
 
 ![图片](https://xilidou.oss-cn-beijing.aliyuncs.com/img/youdao.png)
 
 下载地址如下：https://www.xilidou.com/2017/10/24/%E6%9C%89%E9%81%93-Alfred-Workflow-%E5%A8%81%E5%8A%9B%E5%8A%A0%E5%BC%BA%E7%89%88/。
+
+欢迎关注我的微信公众号：
+![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
