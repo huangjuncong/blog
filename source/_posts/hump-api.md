@@ -206,9 +206,9 @@ workflow 下载地址：[下载](https://xilidou.oss-cn-beijing.aliyuncs.com/img
 
 我之前还开发了一个利用 alfred 直接查询有道词典的 workflow。效果如下图：
 
-![图片](https://xilidou.oss-cn-beijing.aliyuncs.com/img/youdao.png)
+![youdao](https://ws4.sinaimg.cn/large/006tNc79ly1ft55usphfoj30wa0rkao6.jpg)
 
-下载地址如下：https://www.xilidou.com/2017/10/24/%E6%9C%89%E9%81%93-Alfred-Workflow-%E5%A8%81%E5%8A%9B%E5%8A%A0%E5%BC%BA%E7%89%88/。
+下载地址如下：https://www.xilidou.com/2017/10/24/%E6%9C%89%E9%81%93-Alfred-Workflow-%E5%A8%81%E5%8A%9B%E5%8A%A0%E5%BC%BA%E7%89%88/
 
 欢迎关注我的微信公众号：
 ![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)
