@@ -4,8 +4,8 @@
 
 # Site
 title: 犀利豆的博客
-subtitle: 高质量的java技术博客
-description: 北邮本科，University of Leicester EE 研究生，Java后端开发，目前就职五八
+subtitle: 高质量的技术博客
+description: 北邮本科，University of Leicester EE 研究生，Java后端开发，目前就职知乎
 author: Zhengxin Diao
 email: diaozxin@163.com
 keywords: "java,后端,高可用,开发者,程序猿,程序媛,极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek,html"
@@ -71,12 +71,10 @@ time_format: HH:mm:ss
 per_page: 10
 pagination_dir: page
 
-disqus_shortname: xilidou
-
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yilia
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

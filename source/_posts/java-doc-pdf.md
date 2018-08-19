@@ -4,6 +4,8 @@ date: 2018-08-15 21:00:38
 tags: [java,docx,pdf,office]
 ---
 
+![](https://ws3.sinaimg.cn/large/0069RVTdly1fuaukzqghtj31kw0w0n9w.jpg)
+
 最近做了一个比较有意思的需求，实现的比较有意思。
 
 # 需求：
@@ -38,22 +40,21 @@ ooxml-schemas-1.3.jar
  第二种思路，使用 [LibreOffice](https://www.libreoffice.org/), LibreOffice 提供了一套 api 可以提供给 java 程序调用。
 所以使用 [jodconverter](https://github.com/sbraconnier/jodconverter) 来调用 LibreOffice。之前网上搜到的教程早就已经过时。jodconverter 早就推出了 4.2 版本。最靠谱的文档还是直接看官方提供的[wiki](https://github.com/sbraconnier/jodconverter/wiki)。
 
-## 2. 渲染模板。
+## 2. 渲染模板
 第一种思路，将 docx 装换为 html 的纯文本格式，再使用 Java 现有的模板引擎（freemark，velocity）渲染内容。但是 docx 文件装换为 html 还是会有极大的格式损失。 pass。
 
 第二种思路。直接操作 docx 文档在 docx 文档中直接将占位符替换为内容。这样保证了格式不会损失，但是没有现成的模板引擎可以支持 docx 的渲染。需要自己实现。
 
-## 3. 水印：
+## 3. 水印
 这个相对比较简单，直接使用 [itextpdf](https://itextpdf.com/) 免费版就能解决问题。需要注意中文的问题字体，下文会逐步讲解。
 
-# 关键技术实现技术实现：
+# 关键技术实现：
 
 ## jodconverter + libreoffice 的使用
 
 `jodconverter` 已经提供了一套完整的`spring-boot`解决方案,只需要在 `pom.xml`中增加如下配置：
 
 ```xml
-
 <dependency>
     <groupId>org.jodconverter</groupId>
     <artifactId>jodconverter-local</artifactId>
@@ -73,14 +74,14 @@ ooxml-schemas-1.3.jar
 
 @Configuration
 public class ApplicationConfig {
-	@Autowired
-	private OfficeManager officeManager;
-	@Bean
-	public DocumentConverter documentConverter(){
-		return LocalConverter.builder()
-				.officeManager(officeManager)
-				.build();
-	}
+    @Autowired
+    private OfficeManager officeManager;
+    @Bean
+    public DocumentConverter documentConverter(){
+        return LocalConverter.builder()
+                .officeManager(officeManager)
+                .build();
+    }
 }
 
 ```
@@ -98,18 +99,18 @@ jodconverter.local.enabled=true
 @Autowired
 private DocumentConverter documentConverter;
 private byte[] docxToPDF(InputStream inputStream) {
-	try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-		documentConverter
-				.convert(inputStream)
-				.as(DefaultDocumentFormatRegistry.DOCX)
-				.to(byteArrayOutputStream)
-				.as(DefaultDocumentFormatRegistry.PDF)
-				.execute();
-		return byteArrayOutputStream.toByteArray();
-	} catch (OfficeException | IOException e) {
-		log.error("convert pdf error");
-	}
-	return null;
+    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+        documentConverter
+                .convert(inputStream)
+                .as(DefaultDocumentFormatRegistry.DOCX)
+                .to(byteArrayOutputStream)
+                .as(DefaultDocumentFormatRegistry.PDF)
+                .execute();
+        return byteArrayOutputStream.toByteArray();
+    } catch (OfficeException | IOException e) {
+        log.error("convert pdf error");
+    }
+    return null;
 }    
 
 ```
@@ -130,89 +131,86 @@ public class OfficeService{
     private static final Pattern SymbolPattern = Pattern.compile("\\{(.+?)\\}", Pattern.CASE_INSENSITIVE);
 
     public byte[] replaceSymbol(InputStream inputStream,Map<String,String> symbolMap) throws IOException {
-		
-		XWPFDocument doc = new XWPFDocument(inputStream);
-
-		replaceSymbolInPara(doc,symbolMap);
-		replaceInTable(doc,symbolMap);
-
-		try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			doc.write(os);
-			return os.toByteArray();
-		}finally {
-			inputStream.close();
-		}
-	}
+        XWPFDocument doc = new XWPFDocument(inputStream)        
+        replaceSymbolInPara(doc,symbolMap);
+        replaceInTable(doc,symbolMap)       
+        try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            doc.write(os);
+            return os.toByteArray();
+        }finally {
+            inputStream.close();
+        }
+    }
 
 
     private int replaceSymbolInPara(XWPFDocument doc,Map<String,String> symbolMap){
-		XWPFParagraph para;
-		Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
-		while(iterator.hasNext()){
-			para = iterator.next();
-			replaceInPara(para,symbolMap);
-		}
-	}
+        XWPFParagraph para;
+        Iterator<XWPFParagraph> iterator = doc.getParagraphsIterator();
+        while(iterator.hasNext()){
+            para = iterator.next();
+            replaceInPara(para,symbolMap);
+        }
+    }
 
     //替换正文
     private void replaceInPara(XWPFParagraph para,Map<String,String> symbolMap) {
 
-		List<XWPFRun> runs;
-		if (symbolMatcher(para.getParagraphText()).find()) {
-			String text = para.getParagraphText();
-			Matcher matcher3 = SymbolPattern.matcher(text);
-			while (matcher3.find()) {
-				String group = matcher3.group(1);
-				String symbol = symbolMap.get(group);
-				if (StringUtils.isBlank(symbol)) {
-					symbol = " ";
-				}
-				text = matcher3.replaceFirst(symbol);
-				matcher3 = SymbolPattern.matcher(text);
-			}
-			runs = para.getRuns();
-			String fontFamily = runs.get(0).getFontFamily();
-			int fontSize = runs.get(0).getFontSize();
-			XWPFRun xwpfRun = para.insertNewRun(0);
-			xwpfRun.setFontFamily(fontFamily);
-			xwpfRun.setText(text);
-			if(fontSize > 0) {
-				xwpfRun.setFontSize(fontSize);
-			}
-			int max = runs.size();
-			for (int i = 1; i < max; i++) {
-				para.removeRun(1);
-			}
+        List<XWPFRun> runs;
+        if (symbolMatcher(para.getParagraphText()).find()) {
+            String text = para.getParagraphText();
+            Matcher matcher3 = SymbolPattern.matcher(text);
+            while (matcher3.find()) {
+                String group = matcher3.group(1);
+                String symbol = symbolMap.get(group);
+                if (StringUtils.isBlank(symbol)) {
+                    symbol = " ";
+                }
+                text = matcher3.replaceFirst(symbol);
+                matcher3 = SymbolPattern.matcher(text);
+            }
+            runs = para.getRuns();
+            String fontFamily = runs.get(0).getFontFamily();
+            int fontSize = runs.get(0).getFontSize();
+            XWPFRun xwpfRun = para.insertNewRun(0);
+            xwpfRun.setFontFamily(fontFamily);
+            xwpfRun.setText(text);
+            if(fontSize > 0) {
+                xwpfRun.setFontSize(fontSize);
+            }
+            int max = runs.size();
+            for (int i = 1; i < max; i++) {
+                para.removeRun(1);
+            }
 
-		}
-	}
+        }
+    }
 
     //替换表格
     private void replaceInTable(XWPFDocument doc,Map<String,String> symbolMap) {
-		Iterator<XWPFTable> iterator = doc.getTablesIterator();
-		XWPFTable table;
-		List<XWPFTableRow> rows;
-		List<XWPFTableCell> cells;
-		List<XWPFParagraph> paras;
-		while (iterator.hasNext()) {
-			table = iterator.next();
-			rows = table.getRows();
-			for (XWPFTableRow row : rows) {
-				cells = row.getTableCells();
-				for (XWPFTableCell cell : cells) {
-					paras = cell.getParagraphs();
-					for (XWPFParagraph para : paras) {
-						replaceInPara(para,symbolMap);
-					}
-				}
-			}
-		}
-	}
+        Iterator<XWPFTable> iterator = doc.getTablesIterator();
+        XWPFTable table;
+        List<XWPFTableRow> rows;
+        List<XWPFTableCell> cells;
+        List<XWPFParagraph> paras;
+        while (iterator.hasNext()) {
+            table = iterator.next();
+            rows = table.getRows();
+            for (XWPFTableRow row : rows) {
+                cells = row.getTableCells();
+                for (XWPFTableCell cell : cells) {
+                    paras = cell.getParagraphs();
+                    for (XWPFParagraph para : paras) {
+                        replaceInPara(para,symbolMap);
+                    }
+                }
+            }
+        }
+    }
 }
 ```
 
 *这里需要特别注意*：
-1. 在解析的文档中，`para.getParagraphText()`指的是获取段落，`para.getRuns()`应该指的是获取词。但是问题来了，获取到的 runs 的划分是一个谜。目前我也没有找到规律，很有可能我们的占位符被划分到了多个`run`中，如果我们简单的针对 `run` 做正则表达的替换，而要先把所有的 `runs` 组合起来再进行正则替换。 
+1. 在解析的文档中，`para.getParagraphText()`指的是获取段落，`para.getRuns()`应该指的是获取词。但是问题来了，获取到的 runs 的划分是一个谜。目前我也没有找到规律，很有可能我们的占位符被划分到了多个`run`中，我们并不是简单的针对 `run` 做正则表达的替换，而要先把所有的 `runs` 组合起来再进行正则替换。 
 2. 在调用`para.insertNewRun()`的时候 `run` 并不会保持字体样式和字体大小需要手动获取并设置。 
 由于以上两个蜜汁实现，所以就写了一坨蜜汁代码才能保证正则替换和格式正确。
 
@@ -222,18 +220,18 @@ test 方法：
 ```java
 @Test
 public void replaceSymbol() throws IOException {
-	File file = new File("symbol.docx");
-	InputStream inputStream = new FileInputStream(file);
-	
-	File outputFile = new File("out.docx");
-	FileOutputStream outputStream = new FileOutputStream(outputFile);
-	Map<String,String> map = new HashMap<>();
+    File file = new File("symbol.docx");
+    InputStream inputStream = new FileInputStream(file);
+
+    File outputFile = new File("out.docx");
+    FileOutputStream outputStream = new FileOutputStream(outputFile);
+    Map<String,String> map = new HashMap<>();
     map.put("tableName","水果价目表");
     map.put("name","苹果");	
     map.put("price","1.5/斤");
-	byte[] bytes = office.replaceSymbol(inputStream, map, );
-	
-	outputStream.write(bytes);
+    byte[] bytes = office.replaceSymbol(inputStream, map, );
+
+    outputStream.write(bytes);
 }
 
 ```
@@ -266,43 +264,44 @@ public void replaceSymbol() throws IOException {
 ```java
     public byte[] addWatermark(InputStream inputStream,String watermark) throws IOException, DocumentException {
 
-		PdfReader reader = new PdfReader(inputStream);
-		try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-			PdfStamper stamper = new PdfStamper(reader, os);
-			int total = reader.getNumberOfPages() + 1;
-			PdfContentByte content;
-			// 设置字体
-			BaseFont baseFont = BaseFont.createFont("simsun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-			// 循环对每页插入水印
-			for (int i = 1; i < total; i++) {
-				// 水印的起始
-				content = stamper.getUnderContent(i);
-				// 开始
-				content.beginText();
-				// 设置颜色
-				content.setColorFill(new BaseColor(244, 244, 244));
-				// 设置字体及字号
-				content.setFontAndSize(baseFont, 50);
-				// 设置起始位置
-				content.setTextMatrix(400, 780);
-				for (int x = 0; x < 5; x++) {
-					for (int y = 0; y < 5; y++) {
-						content.showTextAlignedKerned(Element.ALIGN_CENTER,
-								watermark,
-								(100f + x * 350),
-								(40.0f + y * 150),
-								30);
-					}
-				}
-				content.endText();
-			}
-			stamper.close();
-			return os.toByteArray();
-		}finally {
-			reader.close();
-		}
+        PdfReader reader = new PdfReader(inputStream);
+        try(ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+            PdfStamper stamper = new PdfStamper(reader, os);
+            int total = reader.getNumberOfPages() + 1;
+            PdfContentByte content;
+            // 设置字体
+            BaseFont baseFont = BaseFont.createFont("simsun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+            // 循环对每页插入水印
+            for (int i = 1; i < total; i++) {
+                // 水印的起始
+                content = stamper.getUnderContent(i);
+                // 开始
+                content.beginText();
+                // 设置颜色
+                content.setColorFill(new BaseColor(244, 244, 244));
+                // 设置字体及字号
+                content.setFontAndSize(baseFont, 50);
+                // 设置起始位置
+                content.setTextMatrix(400, 780);
+                for (int x = 0; x < 5; x++) {
+                    for (int y = 0; y < 5; y++) {
+                        content.showTextAlignedKerned(Element.ALIGN_CENTER,
+                                watermark,
+                                (100f + x * 350),
+                                (40.0f + y * 150),
+                                30);
+                    }
+                }
+                content.endText();
+            }
+            stamper.close();
+            return os.toByteArray();
+        }finally {
+            reader.close();
+        }
 
-	}
+    }
+
 
 ```
 
@@ -329,7 +328,7 @@ BaseFont baseFont = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.
 整个需求挺有意思，但是在查询的时候发现中文文档的质量实在堪忧，要么极度过时，要么就是大家互相抄袭。
 查询一个项目的技术文档，最好的路径应该如下:
 
-项目官网 Getting Started --> github demo --> StackOverflow --> ~~CSDN~~ --> ~~百度知道~~
+项目官网 Getting Started == github demo > StackOverflow >> ~~CSDN~~ >> ~~百度知道~~
 
 欢迎关注我的微信公众号
 ![二维码](https://ws3.sinaimg.cn/large/006tNc79ly1fo3oqp60v3j307607674r.jpg)

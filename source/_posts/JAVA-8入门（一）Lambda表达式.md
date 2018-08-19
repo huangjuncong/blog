@@ -1,7 +1,7 @@
 ---
 title: JAVA 8入门（一）Lambda表达式
 date: 2017-10-24 19:09:08
-tags: [Java,Java 8,Lambda]
+tags: [java,Java 8,Lambda]
 ---
 
 机房迁移以后终于可以用上 `Java 8`了，本教程将会分为三个方面介绍`Java 8` 的新特性。首先给大家介绍 `Java 8` 的Lambda 表达式。

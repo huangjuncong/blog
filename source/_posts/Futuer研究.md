@@ -1,7 +1,7 @@
 ---
 title: Futuer研究
 date: 2017-10-24 00:00:07
-tags: [Java,Future,多线程]
+tags: [java,Future,多线程]
 ---
 
 ## Future是什么？

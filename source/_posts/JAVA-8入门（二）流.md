@@ -1,7 +1,7 @@
 ---
 title: JAVA 8入门（二）流
 date: 2017-10-24 19:15:04
-tags: [Java,Java 8,stream]
+tags: [java,Java 8,stream]
 ---
 
 ## 1.简单使用
