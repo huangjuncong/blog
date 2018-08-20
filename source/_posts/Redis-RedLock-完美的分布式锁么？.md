@@ -1,7 +1,7 @@
 ---
 title: Redis RedLock 完美的分布式锁么？
 date: 2017-10-29 16:21:09
-tags: [Redis,分布式锁,后端,redis]
+tags: [redis,分布式锁,后端,redis]
 ---
 
 上周花了点时间研究了 Redis 的作者提的 RedLock 的算法来实现一个分布式锁，[文章地址](https://www.xilidou.com/2017/10/23/Redis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/)。在官方的文档最下面发现了这样一句话。

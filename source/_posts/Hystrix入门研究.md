@@ -1,7 +1,7 @@
 ---
 title: Hystrix入门研究
 date: 2017-10-23 23:59:28
-tags: [后端,Hystrix]
+tags: [后端,Hystrix,java]
 ---
 ## 1、Hystrix是什么
 Hystrix 是Netflix开源的一个针对分布式容错和库。Hystrix的主要功能是隔离分布式系统之间的故障，防止故障带来的雪崩效应。同时也能提供一个分布式服务的优雅的降级方案。从而提高系统的可用性的组件。
