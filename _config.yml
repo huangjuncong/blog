@@ -115,3 +115,9 @@ jsonContent:
     categories: false
     tags: true
 
+algolia:
+  applicationID: 0EILTUSC3F
+  apiKey: 9298ae48cf9d632694eb90d307538e48
+  indexName: 'blog'
+  chunkSize: 5000
+
