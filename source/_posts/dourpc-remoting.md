@@ -1,22 +1,22 @@
 ---
-title: 徒手撸框架--RPC 远程调用
+title: 徒手撸框架--实现 RPC 远程调用
 date: 2018-09-26 18:18:21
 tags: [java,rpc]
 ---
 
 ![](https://ws3.sinaimg.cn/large/006tNc79ly1fvngahcinoj31kw0w07wi.jpg)
 
-微服务的概念，已经是每个开发者必须掌握的一项技术。而 RPC 框架，是构成微服务最重要的组成部分之一。所以最近就会着重研究研究 RPC 框架。趁最近有时间。又看了看 dubbo 的源码。可以说每次看 dubbo 的源码，都有新的体会。dubbo 为了做到灵活和解耦，使用了大量的设计模式和 SPI，要看懂 dubbo 的代码也不太容易。
+微服务,已经是每个互联网开发者必须掌握的一项技术。而 RPC 框架，是构成微服务最重要的组成部分之一。趁最近有时间。又看了看 dubbo 的源码。dubbo 为了做到灵活和解耦，使用了大量的设计模式和 SPI机制，要看懂 dubbo 的代码也不太容易。
 
-按照系列文章的套路，我还是会极简的实现一个 RPC 框架。帮助大家理解 RPC 框架的原理。
+按照《徒手撸框架》系列文章的套路，我还是会极简的实现一个 RPC 框架。帮助大家理解 RPC 框架的原理。
 
-广义的来讲一个完整的 RPC 包含了很多组件，涉及服务发现，服务治理，远程调用，调用链分析，网关等等。我将会慢慢的实现这些功能，这篇文章主要先讲解的是 RPC 的基石，**远程调用**。
+广义的来讲一个完整的 RPC 包含了很多组件，包括服务发现，服务治理，远程调用，调用链分析，网关等等。我将会慢慢的实现这些功能，这篇文章主要先讲解的是 RPC 的基石，**远程调用** 的实现。
 
-RPC （Remote Procedure Call）—远程过程调用，它是一种通过网络从远程计算机程序上请求服务，其实通俗的讲。 RPC 可以让你像调用本地方法一样调用远程方法。下面就开始介绍 RPC 框架中，远程调用的具体实现。以后的文章还会逐渐实现服务发现，统计等功能。
+相信，读完这篇文章你也一定可以自己实现一个可以提供 RPC 调用的框架。
 
 <!--more-->
 
-# RPC 的调用过程。
+# 1. RPC 的调用过程
 
 通过一图我们来了解一下 RPC 的调用过程，从宏观上来看看到底一次 RPC 调用经过些什么过程。
 
@@ -24,25 +24,25 @@ RPC （Remote Procedure Call）—远程过程调用，它是一种通过网络�
 
 ![](https://ws3.sinaimg.cn/large/006tNc79ly1fvng3adrhuj30o40im0to.jpg)
 
-1. client 会调用一个动态代理 proxy 。
-2. 这个代理会将调用通过协议转换成一些字节流
-3. 通过 netty 这个网络框架，将这些字节流发送到服务端
-4. 服务端在受到这个字节流后，会根据协议，翻译成一次调用，调用服务方提供的方法
-5. 如果请求有返回值，又需要把结果根据协议序列化后，再通过 netty 返回给调用方。
+1. client 会调用本地动态代理 proxy 
+2. 这个代理会将调用通过协议转序列化字节流
+3. 通过 netty 网络框架，将字节流发送到服务端
+4. 服务端在受到这个字节流后，会根据协议，反序列化为原始的调用，利用反射原理调用服务方提供的方法
+5. 如果请求有返回值，又需要把结果根据协议序列化后，再通过 netty 返回给调用方
 
-# 概览和技术选型
+# 2. 框架概览和技术选型
 
 看一看框架的组件:
 
 ![](https://ws4.sinaimg.cn/large/006tNc79ly1fvng3yww6lj30bc0h03zr.jpg)
 
-`clinet` 就是调用方。`servive` 是服务的提供者。 `protocol` 包定义了通信协议。`common` 包含了通用的一些逻辑组件。
+`clinet`就是调用方。`servive`是服务的提供者。`protocol`包定义了通信协议。`common`包含了通用的一些逻辑组件。
 
-技术选型项目使用 `maven` 作为包管理工具，`json` 作为序列化协议，使用 `spring boot`管理对象的生命周期，`netty` 作为 `nio` 的网路组件。所以要阅读这篇文章，你需要对 spring boot 和 netty 有基本的了解。
+技术选型项目使用 `maven` 作为包管理工具，`json` 作为序列化协议，使用`spring boot`管理对象的生命周期，`netty` 作为 `nio` 的网路组件。所以要阅读这篇文章，你需要对`spring boot`和`netty`有基本的了解。
 
 下面就看看每个组件的具体实现：
 
-# protocol
+# 3. protocol
 
 其实作为 RPC 的协议，需要考虑只有一个问题--就是怎么把一次方法的调用，变成能够被网络传输的字节流。
 
@@ -91,9 +91,9 @@ public interface Serialization {
 可选用的序列化的协议很多比如：
 * jdk 的序列化方法。（不推荐，不利于之后的跨语言调用）
 * json 可读性强，但是序列化速度慢，体积大。
-* protobuf，kyro，Hessian 等都是优秀的序列化框架，按需选择即可。
+* protobuf，kyro，Hessian 等都是优秀的序列化框架，也可按需选择。
 
-为了简单和便于调试，我们就选择 json 作为序列化协议，使用 jackson 作为序列化框架。
+为了简单和便于调试，我们就选择 json 作为序列化协议，使用`jackson`作为 json 解析框架。
 
 ```java
 /**
@@ -130,7 +130,7 @@ public class JsonSerialization implements Serialization {
 }
 ```
 
-因为我们使用 netty 支持自定义 coder 。所以只需要实现 `ByteToMessageDecoder` 和 `MessageToByteEncoder` 两个接口。就解决了序列化的问题:
+因为 netty 支持自定义 coder 。所以只需要实现 `ByteToMessageDecoder` 和 `MessageToByteEncoder` 两个接口。就解决了序列化的问题:
 
 ```java
 public class RpcDecoder extends ByteToMessageDecoder {
@@ -186,13 +186,13 @@ public class RpcEncoder extends MessageToByteEncoder {
 }
 ```
 
-至此， protocol 的实现，我们就可以把方法的调用和返回，装换为一串可以在网络中传输的 byte[] 数组了。
+至此，protocol 就实现了，我们就可以把方法的调用和结果的返回，转换为一串可以在网络中传输的 byte[] 数组了。
 
-# service
+# 4. server
 
-service 是负责处理客户端请求的组件。在互联网高并发的环境下，使用 nio 非阻塞的方式可以相对轻松的应付高并发的场景。所以直接使用 netty 这个 nio 框架。关键代码如下：
+server 是负责处理客户端请求的组件。在互联网高并发的环境下，使用 Nio 非阻塞的方式可以相对轻松的应付高并发的场景。netty 是一个优秀的 Nio 处理框架。Server 的关键代码如下：
 
-1. netty 是基于 Recotr 模型的。所以需要初始化两组线程 boss 和 worker 。boss 负责分发轮询，worker 负责执行响应的 handler：
+1. netty 是基于 Recotr 模型的。所以需要初始化两组线程 boss 和 worker 。boss 负责分发请求，worker 负责执行相应的 handler：
 
 ```java
  @Bean
@@ -279,12 +279,12 @@ handler(msg) 实际上使用的是 cglib 的 Fastclass 实现的，其实根本�
     }
 ```
 
-总体上来看，server 的实现不是很困难。核心的知识点是 netty 的 chennl 和 cglib 的反射机制。
+总体上来看，server 的实现不是很困难。核心的知识点是 netty 的 channel 的使用和 cglib 的反射机制。
 
-# client 
+# 5. client 
 
 ## future
-其实，对于我来说，client 的实现难度，远远大于 server 的实现。 dubbo 的源码实现为了能够灵活的替换，序列化协议和网络框架用用了很多“委托模式”和“适配器模式”造，代码的抽象程度很高。再加上 netty 是一个异步框架。所有的返回都是基于 Future 和 Callback 的机制。
+其实，对于我来说，client 的实现难度，远远大于 server 的实现。netty 是一个异步框架，所有的返回都是基于 Future 和 Callback 的机制。
 
 所以在阅读以下文字前强烈推荐，我之前写的一篇文章 [Future 研究](https://www.xilidou.com/2017/10/24/Futuer%E7%A0%94%E7%A9%B6/)。利用经典的 wite 和 notify 机制，实现异步的获取请求的结果。
 
@@ -483,7 +483,7 @@ public class RpcConfig implements ApplicationContextAware,InitializingBean {
 
 终于我们最简单的 RPC 框架就开发完了。下面可以测试一下。
 
-# Demo
+# 6. Demo
 
 ## api
 
