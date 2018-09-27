@@ -6,7 +6,7 @@ tags: [java,rpc]
 
 ![](https://ws3.sinaimg.cn/large/006tNc79ly1fvngahcinoj31kw0w07wi.jpg)
 
-微服务,已经是每个互联网开发者必须掌握的一项技术。而 RPC 框架，是构成微服务最重要的组成部分之一。趁最近有时间。又看了看 dubbo 的源码。dubbo 为了做到灵活和解耦，使用了大量的设计模式和 SPI机制，要看懂 dubbo 的代码也不太容易。
+微服务已经是每个互联网开发者必须掌握的一项技术。而 RPC 框架，是构成微服务最重要的组成部分之一。趁最近有时间。又看了看 dubbo 的源码。dubbo 为了做到灵活和解耦，使用了大量的设计模式和 SPI机制，要看懂 dubbo 的代码也不太容易。
 
 按照《徒手撸框架》系列文章的套路，我还是会极简的实现一个 RPC 框架。帮助大家理解 RPC 框架的原理。
 
@@ -18,7 +18,7 @@ tags: [java,rpc]
 
 # 1. RPC 的调用过程
 
-通过一图我们来了解一下 RPC 的调用过程，从宏观上来看看到底一次 RPC 调用经过些什么过程。
+通过下图我们来了解一下 RPC 的调用过程，从宏观上来看看到底一次 RPC 调用经过些什么过程。
 
 当一次调用开始：
 
@@ -44,9 +44,9 @@ tags: [java,rpc]
 
 # 3. protocol
 
-其实作为 RPC 的协议，需要考虑只有一个问题--就是怎么把一次方法的调用，变成能够被网络传输的字节流。
+其实作为 RPC 的协议，只需要考虑一个问题，就是怎么把一次本地方法的调用，变成能够被网络传输的字节流。
 
-首先我们需要定义方法的调用和返回两个实体：
+我们需要定义方法的调用和返回两个对象实体：
 
 请求：
 ```java
@@ -65,7 +65,7 @@ public class RpcRequest {
 }
 ```
 
-结果：
+响应：
 ```java
 @Data
 public class RpcResponse {
@@ -79,7 +79,7 @@ public class RpcResponse {
 }
 ```
 
-确定了，需要序列化的对象，就要确定序列化的协议，实现两个方法，序列化和反序列化两个方法。
+确定了需要序列化的对象实体，就要确定序列化的协议，实现两个方法，序列化和反序列化。
 
 ```java
 public interface Serialization {
@@ -88,7 +88,7 @@ public interface Serialization {
 }
 ```
 
-可选用的序列化的协议很多比如：
+可选用的序列化的协议很多，比如：
 * jdk 的序列化方法。（不推荐，不利于之后的跨语言调用）
 * json 可读性强，但是序列化速度慢，体积大。
 * protobuf，kyro，Hessian 等都是优秀的序列化框架，也可按需选择。
@@ -186,13 +186,13 @@ public class RpcEncoder extends MessageToByteEncoder {
 }
 ```
 
-至此，protocol 就实现了，我们就可以把方法的调用和结果的返回，转换为一串可以在网络中传输的 byte[] 数组了。
+至此，protocol 就实现了，我们就可以把方法的调用和结果的响应转换为一串可以在网络中传输的 byte[] 数组了。
 
 # 4. server
 
-server 是负责处理客户端请求的组件。在互联网高并发的环境下，使用 Nio 非阻塞的方式可以相对轻松的应付高并发的场景。netty 是一个优秀的 Nio 处理框架。Server 的关键代码如下：
+server 是负责处理客户端请求的组件。在互联网高并发的环境下，使用 Nio 非阻塞的方式可以相对轻松的应付高并发的场景。netty 是一个优秀的 Nio 处理框架。Server 就基于 netty 进行开发。关键代码如下：
 
-1. netty 是基于 Recotr 模型的。所以需要初始化两组线程 boss 和 worker 。boss 负责分发请求，worker 负责执行相应的 handler：
+1. netty 是基于 Reacotr 模型的。所以需要初始化两组线程 boss 和 worker 。boss 负责分发请求，worker 负责执行相应的 handler：
 
 ```java
  @Bean
@@ -286,7 +286,7 @@ handler(msg) 实际上使用的是 cglib 的 Fastclass 实现的，其实根本�
 ## future
 其实，对于我来说，client 的实现难度，远远大于 server 的实现。netty 是一个异步框架，所有的返回都是基于 Future 和 Callback 的机制。
 
-所以在阅读以下文字前强烈推荐，我之前写的一篇文章 [Future 研究](https://www.xilidou.com/2017/10/24/Futuer%E7%A0%94%E7%A9%B6/)。利用经典的 wite 和 notify 机制，实现异步的获取请求的结果。
+所以在阅读以下文字前强烈推荐，我之前写的一篇文章 [Future 研究](https://www.xilidou.com/2017/10/24/Futuer%E7%A0%94%E7%A9%B6/)。利用经典的 wite 和 notify 机制，实现异步的获取请求结果。
 
 ```java
 /**
@@ -393,7 +393,7 @@ public class Transporters {
 
 ## 动态代理的实现
 
-动态代理技术最广为人知的应用，应该就是 Spring Aop，面向切面的编程实现。动态的在原有方法Before 或者 After 添加代码。而 RPC 框架中动态代理的作用就是彻底替换原有方法，直接调用远程方法。
+动态代理技术最广为人知的应用，应该就是 Spring 的 Aop，面向切面的编程实现，动态的在原有方法Before 或者 After 添加代码。而 RPC 框架中动态代理的作用就是彻底替换原有方法，直接调用远程方法。
 
 代理工厂类：
 ```java
@@ -442,7 +442,7 @@ public class RpcInvoker<T> implements InvocationHandler {
 2. 拼装 RpcRequest。
 3. 调用 Transports 发送请求，获取结果。
 
-至此终于，整个调用链完整了。我们终于完成了一次 RPC 调用。
+至此，整个调用链完整了。我们终于完成了一次 RPC 调用。
 
 ## 与 Spring 集成
 
@@ -546,7 +546,7 @@ public class ClientApplication {
 
 # 总结
 
-终于我们实现了一个最简版的 RPC 远程调用的模块。
+终于我们实现了一个最简版的 RPC 远程调用的模块。只是包含最最基础的远程调用功能。
 
 如果你对这个项目感兴趣，欢迎你与我联系，为这个框架贡献代码。
 
