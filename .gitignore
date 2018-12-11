@@ -6,4 +6,4 @@ node_modules/
 public/
 .deploy*/
 .vscode/c_cpp_properties.json
-themes/
+themes/*
